@@ -80,21 +80,33 @@ class CycleData(QObject):
             raise NameError(f"{key} not a valid property name.")
          
     def __repr__(self):
+        return self.toString(headTail=5)
+        
+    def toString(self, headTail=None):
+        """ Return CycleData object as a string.
+        
+            Parameters
+            ----------
+            headTail : int, optional
+                If provided, abridge the object to show only the first and last 
+                `headTail` rows. By default, do not abridge and return the full object.
+        """
         keys = ["Date", "Time", "Distance (km)", "Avg. speed (km/h)", "Calories", "Gear"]
         joinStr = "  "
         columns = {key: self.formatted(key) for key in keys}
         widths = {key: max(max([len(str(item)) for item in values]), len(key))#+len(joinStr))
                            for key, values in columns.items()}
-        halfRows = 5
         size = len(self)
-        indices = list(range(halfRows)) + list(range(size-halfRows,size))
+        if headTail is not None:
+            indices = list(range(headTail)) + list(range(size-headTail,size))
+        else:
+            indices = range(size)
+        
         s = ""
         idxWidth = max(len(s), len(str(size)))
         header = [f"{s:<{idxWidth}}"]
-        
         header += [f"{key:>{widths[key]}}" for key in columns]
         rows = [joinStr.join(header)]
-        
             
         for n, idx in enumerate(indices):
             if n >= 1:
