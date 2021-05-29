@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QDockWidget, QAction, QSizePolicy, QMes
 from PyQt5.QtCore import Qt, QFileSystemWatcher, QTimer, pyqtSlot as Slot
 from PyQt5.QtGui import QIcon
 import pandas as pd
-from .plot import CyclePlotWidget
+from .plot import CyclePlotWidget, StatPlot
 from .data import CycleData, CycleDataAnalysis, CycleDataViewer, AddCycleData, PersonalBests
 from .preferences import PreferencesDialog
 
@@ -42,6 +42,7 @@ class CycleTracks(QMainWindow):
         self.viewer = CycleDataViewer(self)
         self.addData = AddCycleData()
         self.plot = CyclePlotWidget(self)
+        self.statPlot = StatPlot(self)
         
         self.pb.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         self.addData.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
@@ -58,12 +59,14 @@ class CycleTracks(QMainWindow):
         
         dockWidgets = [(self.pb, Qt.LeftDockWidgetArea, "Personal Bests"),
                        (self.viewer, Qt.LeftDockWidgetArea, "Monthly Data"),
-                       (self.addData, Qt.LeftDockWidgetArea, "Add Data")]
+                       (self.addData, Qt.LeftDockWidgetArea, "Add Data"),
+                       (self.plot, Qt.RightDockWidgetArea, "Data"),
+                       (self.statPlot, Qt.RightDockWidgetArea, "Stats")]
         
         for widget, area, title in dockWidgets:
             self.createDockWidget(widget, area, title=title)
             
-        self.setCentralWidget(self.plot)
+        # self.setCentralWidget(self.plot)
         
         self.prefDialog = PreferencesDialog(self)
         

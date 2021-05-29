@@ -198,20 +198,27 @@ class CycleData(QObject):
         """ Return average speeds as numpy array. """
         return self.distance/self.timeHours
     
-    def splitMonths(self, includeEmpty=False):
+    def splitMonths(self, includeEmpty=False, returnType='DataFrame'):
         """ Split `df` into months. 
         
             Parameters
             -----------
             includeEmpty : bool
                 If True and if a month has no data, a monthYear string and empty 
-                DataFrame will be included in the returned list. Otherwise, it
-                will be ignored. Default is False.
+                DataFrame or CycleData object will be included in the returned list. 
+                Otherwise, it  will be ignored. Default is False.
+            returnType : {'DataFrame', 'CycleData'}
+                Type of object to return with each month's data. Default is 
+                (pandas) 'DataFrame'
             
             Returns
             -------
-            list of (monthYear string, DataFrame) tuples
+            list of (monthYear string, DataFrame/CycleData) tuples
         """
+        validReturnTypes = ['DataFrame', 'CycleData']
+        if returnType not in validReturnTypes:
+            msg = f"Invalid returnType '{returnType}'. Valid values are {', '.join(validReturnTypes)}"
+            raise ValueError(msg)
         grouped = self.df.groupby(pd.Grouper(key='Date', freq='M'))
         dfs = [group for _,group in grouped]
         lst = []
@@ -240,6 +247,8 @@ class CycleData(QObject):
                 month = date.month
                 year = date.year
             monthYear = f"{calendar.month_name[month]} {year}"
+            if returnType == "CycleData":
+                df = CycleData(df)
             lst.append((monthYear, df))
         return lst
     
