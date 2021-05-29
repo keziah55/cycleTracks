@@ -80,8 +80,35 @@ class CycleData(QObject):
             raise NameError(f"{key} not a valid property name.")
          
     def __repr__(self):
-        # TODO make repr that includes avg speed
-        return repr(self.df)
+        keys = ["Date", "Time", "Distance (km)", "Avg. speed (km/h)", "Calories", "Gear"]
+        joinStr = "  "
+        columns = {key: self.formatted(key) for key in keys}
+        widths = {key: max(max([len(str(item)) for item in values]), len(key))#+len(joinStr))
+                           for key, values in columns.items()}
+        halfRows = 5
+        size = len(self)
+        indices = list(range(halfRows)) + list(range(size-halfRows,size))
+        s = ""
+        idxWidth = max(len(s), len(str(size)))
+        header = [f"{s:<{idxWidth}}"]
+        
+        header += [f"{key:>{widths[key]}}" for key in columns]
+        rows = [joinStr.join(header)]
+        
+            
+        for n, idx in enumerate(indices):
+            if n >= 1:
+                if idx != indices[n-1] + 1:
+                    rows.append("...")
+            row = [f"{idx:>{idxWidth}}"]
+            for key, lst in columns.items():
+                value = lst[idx]
+                width = widths[key]
+                s = f"{value:>{width}}"
+                row.append(s)
+            rows.append(joinStr.join(row))
+        
+        return "\n".join(rows)
     
     @property
     def quickNames(self):
