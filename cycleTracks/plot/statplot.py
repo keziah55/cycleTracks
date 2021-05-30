@@ -22,6 +22,7 @@ class StatPlot(PlotWidget):
                       'median':{'colour':"#cf0202",
                                   'symbol':'o'}}
         self.plot()
+        # self.plotSpread()
         
     @property
     def data(self):
@@ -44,6 +45,23 @@ class StatPlot(PlotWidget):
         styleDict = self.style['median']
         style = self._makeScatterStyle(**styleDict)
         self.dataItem = self.plotItem.scatterPlot(medians, **style)
+        
+        
+    def plotSpread(self, monthIdx=-1):
+        data = self.data.splitMonths(returnType='CycleData')[monthIdx][1]
+        col = 'Avg. speed (km/h)'
+        values = data[col]
+        mean = np.mean(values)
+        std = np.std(values)
+        spread = (values - mean)/std
+        
+        # styleDict = self.style['mean']
+        # style = self._makeScatterStyle(**styleDict)
+        # self.dataItem = self.plotItem.scatterPlot([mean], **style)
+        
+        styleDict = {'colour':"#19b536", 'symbol':"x"}
+        style = self._makeScatterStyle(**styleDict)
+        self.dataItem = self.plotItem.scatterPlot(spread, **style)
         
         
     @staticmethod
