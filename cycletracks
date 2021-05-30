@@ -14,6 +14,7 @@ DEVELOP=$(($DEVELOP+0))
 CURRENT_BRANCH=$(git -C $DIR branch --show-current)
 if [ $DEVELOP == 0 ] && [ $CURRENT_BRANCH != "main" ]; then
     # not in develop mode, checkout main branch
+    git -C $DIR stash
     git -C $DIR checkout main
 fi
 
@@ -22,4 +23,5 @@ python3 $DIR/main.py
 if [ $DEVELOP == 0 ] && [ $CURRENT_BRANCH != "main" ]; then
     # return to branch
     git -C $DIR checkout $CURRENT_BRANCH
+    git -C $DIR stash pop
 fi
